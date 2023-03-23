@@ -1,7 +1,7 @@
 import json
 import asyncio
 import aiohttp
-from utils import create_urls
+from utils import create_urls, combine_lists
 
 
 async def get_json_data(session, url):
@@ -12,20 +12,18 @@ async def get_json_data(session, url):
 
 
 async def final_results():
-
     urls = create_urls()
 
     if urls:
-
-        json_data = []
-
         async with aiohttp.ClientSession() as session:
             articles = [get_json_data(session, url) for url in urls]
+
+            # list(coroutine) --> list(list)
             results = await asyncio.gather(*articles)
-            for result in results:
-                json_data.append(result[0])
-        with open("articles.json", "w") as file:
-            json.dump(results[0], file)
 
+            # list(list(dict)) --> list(dict)
+            json_data = await combine_lists(results)
 
+            with open("articles.json", "w") as file:
+                json.dump(json_data, file)
 

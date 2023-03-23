@@ -1,3 +1,5 @@
+import asyncio
+
 import requests
 
 
@@ -37,3 +39,16 @@ def create_urls():
 
         return urls
     return False
+
+
+# json data is retrieved from website as a list of lists. To enhance readability, we convert a list
+# of nested lists containing dictionaries into a single list of dictionaries:
+# list(list(dict)) -> list(dict)
+async def combine_lists(lists):
+
+    combined = [elem for sublist in lists for elem in sublist]
+
+    await asyncio.sleep(0)  # yield control to other tasks
+
+    return combined
+

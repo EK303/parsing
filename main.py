@@ -1,6 +1,6 @@
 import asyncio
 
-from parsing import create_urls, final_results
+from parsing import final_results
 
 
 loop = asyncio.get_event_loop()
