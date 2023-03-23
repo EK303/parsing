@@ -2,6 +2,8 @@ import asyncio
 
 import requests
 
+from bs4 import BeautifulSoup as bs
+
 
 def get_initial_data():
     # getting the total number of articles and the number of articles per scroll
@@ -22,7 +24,7 @@ def get_initial_data():
     return False
 
 
-def create_urls():
+def get_urls():
     urls = []
 
     initial_count = get_initial_data()
@@ -48,17 +50,71 @@ async def combine_lists(lists):
     combined = [elem for sublist in lists for elem in sublist]
 
     try:
-        result = [{"id": elem["key"],
-                   "title": elem["title"],
-                   "url": f"https://realpython.com{elem['url']}",
-                   "pub_date": elem["pub_date"],
-                   "tags": elem["categories"],
-                   "description": elem["description"]} for elem in combined]
+        result = []
+        for elem in combined:
+            info_article = {"id": elem["key"],
+                            "title": elem["title"],
+                            "url": f"https://realpython.com{elem['url']}",
+                            "pub_date": elem["pub_date"],
+                            "tags": elem["categories"],
+                            "description": elem["description"],
+                            }
+            result.append(info_article)
         await asyncio.sleep(0)
+
         return result
+
     except KeyError:
         print("Invalid key. Check json data")
 
 
+async def scrape_webpage(div):
+
+    result = {}
+
+    text = {"no headers": ""}
+
+    for p in div.find_all('p', class_=False):
+
+        if p.text == "Unlock This Article":
+            result["preview"] = True
+            break
+
+        if p.text == "🐍 Python Tricks 💌":
+            break
+
+        if p.find_previous("h2"):
+            if text.get(p.find_previous("h2").text) is None:
+                text[p.find_previous("h2").text] = ""
+            text[p.find_previous("h2").text] += p.text
+
+        elif p.find_previous("h3"):
+            if text.get(p.find_previous("h3").text) is None:
+                text[p.find_previous("h3").text] = ""
+            text[p.find_previous("h3").text] += p.text
+
+        else:
+            text["no headers"] += p.text
+
+    d = ""
+    for key, value in zip(list(text.keys()), list(text.values())):
+        d = key + "\n " + value
+
+    await asyncio.sleep(0)
+
+    result["text"] = d
+    result["preview"] = False
+
+    return result
 
 
+async def parse_webpage(html):
+
+    soup = bs(html, 'html.parser')
+
+    div = soup.find("div", {"class": "article-body"})
+
+    if div is None:
+        div = soup.find("div", {"class": "col-md-11 col-lg-8 article with-headerlinks"})
+
+    return await scrape_webpage(div)
