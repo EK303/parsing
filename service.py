@@ -9,7 +9,7 @@ def get_initial_data():
     # getting the total number of articles and the number of articles per scroll
     response = requests.get("https://realpython.com/search/api/v1/?kind=article&level=basics&continue_after=0")
 
-    if response.status_code == 200:
+    if response.ok:
         main_json = response.json()
 
         try:

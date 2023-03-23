@@ -1,5 +1,5 @@
 import aiohttp
-from utils import parse_webpage
+from service import parse_webpage
 
 
 async def get_html_data(link):

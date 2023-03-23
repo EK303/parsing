@@ -2,7 +2,7 @@ import json
 import asyncio
 import aiohttp
 
-from utils import get_urls, combine_lists
+from service import get_urls, combine_lists
 from parse_html import get_add_data
 
 
