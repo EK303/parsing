@@ -45,10 +45,20 @@ def create_urls():
 # of nested lists containing dictionaries into a single list of dictionaries:
 # list(list(dict)) -> list(dict)
 async def combine_lists(lists):
-
     combined = [elem for sublist in lists for elem in sublist]
 
-    await asyncio.sleep(0)  # yield control to other tasks
+    try:
+        result = [{"id": elem["key"],
+                   "title": elem["title"],
+                   "url": f"https://realpython.com{elem['url']}",
+                   "pub_date": elem["pub_date"],
+                   "tags": elem["categories"],
+                   "description": elem["description"]} for elem in combined]
+        await asyncio.sleep(0)
+        return result
+    except KeyError:
+        print("Invalid key. Check json data")
 
-    return combined
+
+
 

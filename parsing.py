@@ -5,6 +5,7 @@ from utils import create_urls, combine_lists
 
 
 async def get_json_data(session, url):
+
     # async with aiohttp.ClientSession() as session:
     async with session.get(url) as response:
         json_data = await response.json()
@@ -27,3 +28,6 @@ async def final_results():
             with open("articles.json", "w") as file:
                 json.dump(json_data, file)
 
+    else:
+        print("Something went wrong. Check your scripts")
+    return False
