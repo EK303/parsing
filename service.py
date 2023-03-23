@@ -9,7 +9,7 @@ def get_initial_data():
     # getting the total number of articles and the number of articles per scroll
     response = requests.get("https://realpython.com/search/api/v1/?kind=article&level=basics&continue_after=0")
 
-    if response.ok:
+    if response.status_code == 200:
         main_json = response.json()
 
         try:
@@ -52,6 +52,7 @@ async def combine_lists(lists):
     try:
         result = []
         for elem in combined:
+
             info_article = {"id": elem["key"],
                             "title": elem["title"],
                             "url": f"https://realpython.com{elem['url']}",
@@ -73,6 +74,9 @@ async def scrape_webpage(div):
     result = {}
 
     text = {"no headers": ""}
+
+    href = div.find_all('a')
+    links = [a["href"] for a in href]
 
     for p in div.find_all('p', class_=False):
 
@@ -104,6 +108,7 @@ async def scrape_webpage(div):
 
     result["text"] = d
     result["preview"] = False
+    result["links"] = links
 
     return result
 

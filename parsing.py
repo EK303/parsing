@@ -44,6 +44,7 @@ async def final_results():
             for elem, page_info in zip(json_data, ind_data):
                 elem["text"] = page_info["text"]
                 elem["preview"] = page_info["preview"]
+                elem["links"] = page_info["links"]
 
             with open("articles.json", "w") as file:
                 json.dump(json_data, file, indent=2)
